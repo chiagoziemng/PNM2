@@ -1,0 +1,1840 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Produce Market Network (PMN) | Global Agricultural Market Ecosystem</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Editorial Serif, Clean Sans & Monospace Terminal -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Three.js + OrbitControls CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              obsidian: '#05090F',
+              navy: '#09111D',
+              deepBlue: '#0E1A2C',
+              card: '#111F35',
+              border: '#1F2E45',
+              gold: '#C49753',
+              goldLight: '#DFC085',
+              bronze: '#9F7538',
+              emerald: '#059669',
+              emeraldDeep: '#064E3B',
+              ruby: '#DC2626',
+              slateText: '#94A3B8',
+              stoneMuted: '#CBD5E1',
+            }
+          },
+          fontFamily: {
+            serif: ['Newsreader', 'Playfair Display', 'Georgia', 'serif'],
+            display: ['Cinzel', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #05090F;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1F2E45;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #C49753;
+    }
+
+    /* Subtle grid background */
+    .bg-grid-pattern {
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(31, 46, 69, 0.25) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(31, 46, 69, 0.25) 1px, transparent 1px);
+    }
+
+    .ticker-scroll {
+      display: flex;
+      width: max-content;
+      animation: ticker 35s linear infinite;
+    }
+    .ticker-scroll:hover {
+      animation-play-state: paused;
+    }
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Active navigation indicator */
+    .nav-btn.active {
+      color: #C49753;
+      border-bottom: 2px solid #C49753;
+    }
+
+    /* ThreeJS Container Canvas */
+    #hero3d-canvas, #nodes3d-canvas {
+      outline: none;
+    }
+  </style>
+</head>
+<body class="bg-brand-obsidian text-stone-200 font-sans antialiased selection:bg-brand-gold selection:text-brand-obsidian overflow-x-hidden min-h-screen flex flex-col justify-between">
+
+  <!-- 1. SIMULATED BENCHMARK TERMINAL TICKER -->
+  <div class="bg-[#04070B] border-b border-brand-border/60 text-xs text-brand-slateText py-1.5 px-4 overflow-hidden relative z-50">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      <div class="flex items-center gap-2 shrink-0">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="font-mono text-[10px] uppercase tracking-wider text-brand-gold font-semibold">PMN CORE BENCHMARK FEED</span>
+        <span class="hidden md:inline text-stone-600">|</span>
+        <span class="hidden md:inline text-[10px] text-stone-400 font-mono">SIMULATED INSTITUTIONAL QUOTES</span>
+      </div>
+
+      <!-- Marquee Ticker -->
+      <div class="overflow-hidden whitespace-nowrap flex-1">
+        <div class="ticker-scroll font-mono text-[11px] gap-8">
+          <div class="flex items-center gap-8">
+            <span class="flex items-center gap-1.5"><strong class="text-white">ICCO.COCOA:</strong> $8,240.00/MT <span class="text-emerald-400 font-bold">+2.4%</span></span>
+            <span class="flex items-center gap-1.5"><strong class="text-white">CBOT.CORN:</strong> $174.50/MT <span class="text-rose-400 font-bold">-0.8%</span></span>
+            <span class="flex items-center gap-1.5"><strong class="text-white">HRW.WHEAT:</strong> $224.20/MT <span class="text-emerald-400 font-bold">+1.2%</span></span>
+            <span class="flex items-center gap-1.5"><strong class="text-white">MDEX.PALM:</strong> $982.00/MT <span class="text-emerald-400 font-bold">+0.6%</span></span>
+            <span class="flex items-center gap-1.5"><strong class="text-white">ROB.COFFEE:</strong> $4,320.00/MT <span class="text-rose-400 font-bold">-1.1%</span></span>
+            <span class="flex items-center gap-1.5"><strong class="text-white">PARANA.SOY:</strong> $418.00/MT <span class="text-emerald-400 font-bold">+0.9%</span></span>
+            <span class="flex items-center gap-1.5"><strong class="text-white">CASHEW.RCN:</strong> $1,340.00/MT <span class="text-emerald-400 font-bold">+3.1%</span></span>
+          </div>
+          <!-- Duplicate for seamless scroll -->
+          <div class="flex items-center gap-8">
+            <span class="flex items-center gap-1.5"><strong class="text-white">ICCO.COCOA:</strong> $8,240.00/MT <span class="text-emerald-400 font-bold">+2.4%</span></span>
+            <span class="flex items-center gap-1.5"><strong class="text-white">CBOT.CORN:</strong> $174.50/MT <span class="text-rose-400 font-bold">-0.8%</span></span>
+            <span class="flex items-center gap-1.5"><strong class="text-white">HRW.WHEAT:</strong> $224.20/MT <span class="text-emerald-400 font-bold">+1.2%</span></span>
+            <span class="flex items-center gap-1.5"><strong class="text-white">MDEX.PALM:</strong> $982.00/MT <span class="text-emerald-400 font-bold">+0.6%</span></span>
+            <span class="flex items-center gap-1.5"><strong class="text-white">ROB.COFFEE:</strong> $4,320.00/MT <span class="text-rose-400 font-bold">-1.1%</span></span>
+            <span class="flex items-center gap-1.5"><strong class="text-white">PARANA.SOY:</strong> $418.00/MT <span class="text-emerald-400 font-bold">+0.9%</span></span>
+            <span class="flex items-center gap-1.5"><strong class="text-white">CASHEW.RCN:</strong> $1,340.00/MT <span class="text-emerald-400 font-bold">+3.1%</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hidden lg:flex items-center gap-3 shrink-0 text-[10px] font-mono text-stone-400">
+        <span>LONDON 08:30</span>
+        <span>•</span>
+        <span>SINGAPORE 16:30</span>
+        <span>•</span>
+        <span>CHICAGO 02:30</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. INSTITUTIONAL HEADER & NAVIGATION -->
+  <header class="sticky top-0 z-40 bg-brand-navy/95 backdrop-blur-md border-b border-brand-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- Corporate Identity / Crest -->
+        <div onclick="navigateTo('home')" class="flex items-center gap-3 cursor-pointer group">
+          <div class="w-10 h-10 rounded-sm bg-gradient-to-br from-brand-deepBlue to-brand-obsidian border border-brand-gold/60 flex items-center justify-center text-brand-gold font-display font-bold text-lg shadow-inner group-hover:border-brand-gold transition-colors">
+            PMN
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-display tracking-[0.2em] text-sm md:text-base font-bold text-white uppercase group-hover:text-brand-goldLight transition-colors">
+                PRODUCE MARKET NETWORK
+              </span>
+            </div>
+            <p class="text-[9px] text-brand-slateText tracking-widest uppercase font-mono">
+              Agricultural Intelligence • Connectivity • Commerce
+            </p>
+          </div>
+        </div>
+
+        <!-- Desktop Navigation Items -->
+        <nav class="hidden xl:flex items-center space-x-6 text-xs uppercase tracking-wider font-medium text-stone-300">
+          <button onclick="navigateTo('home')" id="nav-home" class="nav-btn py-2 hover:text-white transition active">Overview</button>
+          <button onclick="navigateTo('about')" id="nav-about" class="nav-btn py-2 hover:text-white transition">About PMN</button>
+          <button onclick="navigateTo('businesses')" id="nav-businesses" class="nav-btn py-2 hover:text-white transition">The 4 Divisions</button>
+          <button onclick="navigateTo('intelligence')" id="nav-intelligence" class="nav-btn py-2 hover:text-white transition">Market Terminal</button>
+          <button onclick="navigateTo('media')" id="nav-media" class="nav-btn py-2 hover:text-white transition">Media & Insights</button>
+          <button onclick="navigateTo('connectivity')" id="nav-connectivity" class="nav-btn py-2 hover:text-white transition">Exchange Portal</button>
+          <button onclick="navigateTo('outlook')" id="nav-outlook" class="nav-btn py-2 hover:text-white transition">Trade Corridors</button>
+          <button onclick="navigateTo('contact')" id="nav-contact" class="nav-btn py-2 hover:text-white transition">Secretariat</button>
+        </nav>
+
+        <!-- CTAs -->
+        <div class="hidden md:flex items-center gap-3">
+          <button onclick="navigateTo('intelligence')" class="text-xs uppercase font-mono tracking-wider px-3.5 py-2 border border-brand-border text-stone-300 hover:text-white hover:border-brand-gold rounded-sm transition">
+            Terminal Access
+          </button>
+          <button onclick="navigateTo('connectivity')" class="text-xs uppercase font-mono tracking-wider px-4 py-2 bg-brand-gold hover:bg-brand-goldLight text-brand-obsidian font-bold rounded-sm transition shadow-sm">
+            Onboard Entity
+          </button>
+        </div>
+
+        <!-- Mobile Drawer Toggle -->
+        <div class="xl:hidden flex items-center">
+          <button onclick="toggleMobileMenu()" class="p-2 text-stone-300 hover:text-white focus:outline-none" aria-label="Toggle Menu">
+            <i data-lucide="menu" id="menu-icon-open" class="w-6 h-6"></i>
+            <i data-lucide="x" id="menu-icon-close" class="w-6 h-6 hidden"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Drawer -->
+    <div id="mobile-menu" class="hidden xl:hidden bg-brand-navy border-b border-brand-border px-6 py-6 space-y-3">
+      <button onclick="navigateTo('home')" class="block w-full text-left py-2 text-sm uppercase font-mono text-stone-300 hover:text-brand-gold">01. Overview</button>
+      <button onclick="navigateTo('about')" class="block w-full text-left py-2 text-sm uppercase font-mono text-stone-300 hover:text-brand-gold">02. About PMN</button>
+      <button onclick="navigateTo('businesses')" class="block w-full text-left py-2 text-sm uppercase font-mono text-stone-300 hover:text-brand-gold">03. The 4 Divisions</button>
+      <button onclick="navigateTo('intelligence')" class="block w-full text-left py-2 text-sm uppercase font-mono text-stone-300 hover:text-brand-gold">04. Market Terminal</button>
+      <button onclick="navigateTo('media')" class="block w-full text-left py-2 text-sm uppercase font-mono text-stone-300 hover:text-brand-gold">05. Media & Documentaries</button>
+      <button onclick="navigateTo('connectivity')" class="block w-full text-left py-2 text-sm uppercase font-mono text-stone-300 hover:text-brand-gold">06. Exchange Registry</button>
+      <button onclick="navigateTo('outlook')" class="block w-full text-left py-2 text-sm uppercase font-mono text-stone-300 hover:text-brand-gold">07. Global Corridors</button>
+      <button onclick="navigateTo('contact')" class="block w-full text-left py-2 text-sm uppercase font-mono text-stone-300 hover:text-brand-gold">08. Institutional Desk</button>
+      <div class="pt-4 border-t border-brand-border/60 flex flex-col gap-2">
+        <button onclick="navigateTo('connectivity')" class="w-full py-2.5 bg-brand-gold text-brand-obsidian text-xs font-mono font-bold uppercase rounded-sm">Onboard Commercial Entity</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 3. MAIN MULTI-PAGE APPLICATION CANVAS -->
+  <main class="flex-grow relative">
+
+    <!-- ================= PAGE 1: HOME (DEFAULT) ================= -->
+    <section id="page-home" class="page-view">
+      
+      <!-- 3D HERO SECTION -->
+      <div class="relative bg-brand-obsidian min-h-[85vh] lg:min-h-[90vh] flex items-center overflow-hidden border-b border-brand-border">
+        <!-- Three.js Canvas Layer (Interactive Trade Corridor Globe) -->
+        <div id="hero3d-container" class="absolute inset-0 z-0 opacity-80 cursor-grab active:cursor-grabbing"></div>
+
+        <!-- Radial overlay to ensure text contrast -->
+        <div class="absolute inset-0 bg-gradient-to-r from-brand-obsidian via-brand-obsidian/85 to-transparent pointer-events-none z-10"></div>
+        
+        <!-- Hero Foreground Content -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-20 w-full pointer-events-none">
+          <div class="max-w-2xl lg:max-w-3xl space-y-6">
+            
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-brand-deepBlue/80 backdrop-blur-md border border-brand-gold/40 rounded-sm text-stone-300 text-xs font-mono tracking-widest uppercase pointer-events-auto">
+              <span class="w-2 h-2 rounded-full bg-brand-gold animate-ping"></span>
+              Global Agricultural Infrastructure
+            </div>
+
+            <h1 class="text-4xl sm:text-6xl font-serif font-bold text-white tracking-tight leading-[1.08]">
+              THE NETWORK BEHIND GLOBAL AGRICULTURAL MARKETS.
+            </h1>
+
+            <p class="text-base sm:text-lg text-stone-300 font-light leading-relaxed max-w-2xl">
+              We connect agricultural intelligence, market participants, and commodity commerce to make global food supply chains transparent, accessible, and commercially efficient.
+            </p>
+
+            <div class="pt-4 flex flex-wrap gap-4 items-center pointer-events-auto">
+              <button onclick="navigateTo('businesses')" class="px-6 py-3.5 bg-brand-gold hover:bg-brand-goldLight text-brand-obsidian font-mono font-bold text-xs uppercase tracking-widest transition rounded-sm shadow-xl flex items-center gap-2">
+                Explore The 4 Divisions <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </button>
+              <button onclick="navigateTo('intelligence')" class="px-6 py-3.5 bg-brand-navy/90 hover:bg-brand-deepBlue border border-brand-border text-stone-200 font-mono font-semibold text-xs uppercase tracking-widest transition rounded-sm flex items-center gap-2">
+                Open Market Terminal <i data-lucide="terminal" class="w-4 h-4 text-brand-gold"></i>
+              </button>
+            </div>
+
+            <!-- Macro Indicators -->
+            <div class="pt-10 border-t border-brand-border/80 grid grid-cols-3 gap-6 text-stone-400 font-mono pointer-events-auto">
+              <div>
+                <div class="text-2xl lg:text-3xl font-serif font-bold text-white tracking-tight">$8.5T+</div>
+                <div class="text-[10px] uppercase tracking-wider text-stone-400 mt-1">Global Trade Value</div>
+              </div>
+              <div>
+                <div class="text-2xl lg:text-3xl font-serif font-bold text-white tracking-tight">4 Pillars</div>
+                <div class="text-[10px] uppercase tracking-wider text-stone-400 mt-1">Integrated Ecosystem</div>
+              </div>
+              <div>
+                <div class="text-2xl lg:text-3xl font-serif font-bold text-white tracking-tight">Origin &rarr; Berth</div>
+                <div class="text-[10px] uppercase tracking-wider text-stone-400 mt-1">Full Value Chain</div>
+              </div>
+            </div>
+
+            <!-- Three.js Interaction Hint -->
+            <div class="pt-2 text-[10px] font-mono text-stone-500 flex items-center gap-2 pointer-events-auto">
+              <i data-lucide="rotate-3d" class="w-3.5 h-3.5 text-brand-gold"></i>
+              <span>Interactive 3D Sphere: Drag to rotate global trade corridors</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- CORE THESIS & ECONOMIC PHILOSOPHY -->
+      <section class="py-24 bg-brand-navy border-b border-brand-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <div class="lg:col-span-5 space-y-4">
+              <span class="text-xs font-mono font-bold tracking-widest uppercase text-brand-gold">
+                The Economic Philosophy
+              </span>
+              <h2 class="text-3xl sm:text-4xl font-serif font-bold text-white leading-tight">
+                "We Followed The Money."
+              </h2>
+              <p class="text-sm text-stone-400 leading-relaxed font-sans">
+                Agriculture is an interconnected global macroeconomic system involving producers, primary aggregators, processors, commodity trade desks, logistics operators, and international buyers.
+              </p>
+              <div class="w-16 h-0.5 bg-brand-gold"></div>
+            </div>
+
+            <div class="lg:col-span-7 bg-brand-obsidian p-8 border border-brand-border rounded-sm space-y-6">
+              <p class="font-serif italic text-lg text-stone-300 leading-snug">
+                "Agriculture generates enormous economic value, but understanding where that value settles requires looking beyond the farm. We investigate the economics, people, businesses, infrastructure and transactions that shape agricultural markets."
+              </p>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 text-xs font-sans text-stone-400">
+                <div class="p-3 bg-brand-navy border border-brand-border/60">
+                  <div class="font-mono text-white font-bold uppercase mb-1">Information Friction</div>
+                  Localized cash prices diverge by over 40% between origin aggregation and primary export ports.
+                </div>
+                <div class="p-3 bg-brand-navy border border-brand-border/60">
+                  <div class="font-mono text-white font-bold uppercase mb-1">Capital Asymmetry</div>
+                  Trade finance and verified collateral frameworks remain locked behind legacy intermediaries.
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- THE FOUR INTERCONNECTED DIVISIONS -->
+      <section class="py-24 bg-brand-obsidian border-b border-brand-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+          
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+              <span class="text-xs font-mono font-bold tracking-widest uppercase text-brand-gold">
+                Institutional Architecture
+              </span>
+              <h2 class="text-3xl sm:text-4xl font-serif font-bold text-white mt-1">
+                Our Four Business Divisions
+              </h2>
+            </div>
+            <p class="text-xs font-mono text-stone-400 max-w-md">
+              A comprehensive institutional model connecting storytelling, data transparency, verified commercial networks, and responsible commodity execution.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            <!-- Division 1 -->
+            <div class="bg-brand-navy p-6 border border-brand-border hover:border-brand-gold/60 transition group flex flex-col justify-between">
+              <div class="space-y-4">
+                <div class="w-10 h-10 rounded-sm bg-brand-obsidian border border-brand-border flex items-center justify-center text-brand-gold group-hover:scale-105 transition">
+                  <i data-lucide="newspaper" class="w-5 h-5"></i>
+                </div>
+                <div class="text-[10px] font-mono text-brand-gold uppercase tracking-wider">Division 01</div>
+                <h3 class="text-xl font-serif font-bold text-white group-hover:text-brand-goldLight transition">PMN Media</h3>
+                <p class="text-xs text-stone-400 leading-relaxed">
+                  Documentary films, business investigations, and economic features exploring the corporate reality and logistics of global food systems.
+                </p>
+              </div>
+              <div class="pt-6 border-t border-brand-border/60 mt-6">
+                <button onclick="navigateTo('media')" class="text-xs font-mono font-semibold uppercase text-stone-300 group-hover:text-brand-gold flex items-center gap-1.5">
+                  Editorial Desk <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Division 2 -->
+            <div class="bg-brand-navy p-6 border border-brand-border hover:border-brand-gold/60 transition group flex flex-col justify-between">
+              <div class="space-y-4">
+                <div class="w-10 h-10 rounded-sm bg-brand-obsidian border border-brand-border flex items-center justify-center text-brand-gold group-hover:scale-105 transition">
+                  <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                </div>
+                <div class="text-[10px] font-mono text-brand-gold uppercase tracking-wider">Division 02</div>
+                <h3 class="text-xl font-serif font-bold text-white group-hover:text-brand-goldLight transition">PMN Intelligence</h3>
+                <p class="text-xs text-stone-400 leading-relaxed">
+                  Transforming fragmented physical market metrics into institutional datasets: regional price monitors, origin-destination spreads, and trade flows.
+                </p>
+              </div>
+              <div class="pt-6 border-t border-brand-border/60 mt-6">
+                <button onclick="navigateTo('intelligence')" class="text-xs font-mono font-semibold uppercase text-stone-300 group-hover:text-brand-gold flex items-center gap-1.5">
+                  Terminal Demonstrator <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Division 3 -->
+            <div class="bg-brand-navy p-6 border border-brand-border hover:border-brand-gold/60 transition group flex flex-col justify-between">
+              <div class="space-y-4">
+                <div class="w-10 h-10 rounded-sm bg-brand-obsidian border border-brand-border flex items-center justify-center text-brand-gold group-hover:scale-105 transition">
+                  <i data-lucide="layers" class="w-5 h-5"></i>
+                </div>
+                <div class="text-[10px] font-mono text-brand-gold uppercase tracking-wider">Division 03</div>
+                <h3 class="text-xl font-serif font-bold text-white group-hover:text-brand-goldLight transition">PMN Exchange</h3>
+                <p class="text-xs text-stone-400 leading-relaxed">
+                  Verified digital counterparty discovery connecting certified origin aggregators, industrial processors, and institutional off-takers.
+                </p>
+              </div>
+              <div class="pt-6 border-t border-brand-border/60 mt-6">
+                <button onclick="navigateTo('connectivity')" class="text-xs font-mono font-semibold uppercase text-stone-300 group-hover:text-brand-gold flex items-center gap-1.5">
+                  Counterparty Onboarding <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Division 4 -->
+            <div class="bg-brand-navy p-6 border border-brand-border hover:border-brand-gold/60 transition group flex flex-col justify-between">
+              <div class="space-y-4">
+                <div class="w-10 h-10 rounded-sm bg-brand-obsidian border border-brand-border flex items-center justify-center text-brand-gold group-hover:scale-105 transition">
+                  <i data-lucide="compass" class="w-5 h-5"></i>
+                </div>
+                <div class="text-[10px] font-mono text-brand-gold uppercase tracking-wider">Division 04</div>
+                <h3 class="text-xl font-serif font-bold text-white group-hover:text-brand-goldLight transition">PMN Trading</h3>
+                <p class="text-xs text-stone-400 leading-relaxed">
+                  Responsible procurement, structured supply agreements, wholesale aggregation, and eventual selective physical market-making.
+                </p>
+              </div>
+              <div class="pt-6 border-t border-brand-border/60 mt-6">
+                <button onclick="navigateTo('businesses')" class="text-xs font-mono font-semibold uppercase text-stone-300 group-hover:text-brand-gold flex items-center gap-1.5">
+                  Trading Governance <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- 3D DATA NODES / COMMODITY FLOW ARCHITECTURE INTERACTIVE VIEWER -->
+      <section class="py-20 bg-brand-navy border-b border-brand-border relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            <div class="lg:col-span-5 space-y-4 z-10">
+              <span class="text-xs font-mono font-bold tracking-widest uppercase text-brand-gold">
+                Interactive Architecture Model
+              </span>
+              <h2 class="text-3xl font-serif font-bold text-white leading-tight">
+                Integrated Physical Commodity Node Topology
+              </h2>
+              <p class="text-xs text-stone-400 leading-relaxed">
+                Visualizing how origin aggregation depots, primary quality assay gates, freight corridors, and institutional terminal accounts synchronize through PMN's structural data layer.
+              </p>
+
+              <div class="space-y-2 pt-2">
+                <div class="flex items-center gap-3 text-xs font-mono text-stone-300">
+                  <span class="w-3 h-3 rounded-full bg-brand-gold"></span>
+                  <span>Origin Aggregation Hubs (Africa / Americas / SEA)</span>
+                </div>
+                <div class="flex items-center gap-3 text-xs font-mono text-stone-300">
+                  <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                  <span>Quality Assayed Inspection Depots</span>
+                </div>
+                <div class="flex items-center gap-3 text-xs font-mono text-stone-300">
+                  <span class="w-3 h-3 rounded-full bg-sky-400"></span>
+                  <span>Institutional Terminal Off-takers</span>
+                </div>
+              </div>
+
+              <div class="pt-4">
+                <button onclick="resetNodesCamera()" class="px-4 py-2 bg-brand-obsidian border border-brand-border hover:border-brand-gold text-xs font-mono text-stone-300 rounded-sm">
+                  Reset Node Viewport
+                </button>
+              </div>
+            </div>
+
+            <!-- 3D Nodes Canvas Viewport -->
+            <div class="lg:col-span-7 h-96 bg-brand-obsidian border border-brand-border rounded-sm relative overflow-hidden shadow-2xl">
+              <div id="nodes3d-container" class="w-full h-full cursor-move"></div>
+              <div class="absolute bottom-3 right-3 text-[10px] font-mono bg-brand-navy/90 border border-brand-border px-2 py-1 rounded text-stone-400 pointer-events-none">
+                WebGL 3D Matrix • Drag / Zoom
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURED DOCUMENTARY INVESTIGATION -->
+      <section class="py-24 bg-brand-obsidian">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+          <div class="flex justify-between items-end border-b border-brand-border pb-4">
+            <div>
+              <span class="text-xs font-mono font-bold uppercase tracking-widest text-brand-gold">
+                PMN Media Investigation
+              </span>
+              <h2 class="text-2xl sm:text-3xl font-serif font-bold text-white mt-1">
+                Flagship Documentary Series
+              </h2>
+            </div>
+            <button onclick="navigateTo('media')" class="text-xs font-mono uppercase text-brand-gold hover:underline flex items-center gap-1">
+              View All Investigative Film Studies &rarr;
+            </button>
+          </div>
+
+          <div class="bg-brand-navy border border-brand-border grid grid-cols-1 lg:grid-cols-12 overflow-hidden shadow-2xl">
+            <div class="lg:col-span-7 relative h-72 lg:h-auto min-h-[320px] bg-stone-900 group cursor-pointer" onclick="openVideoModal('Anatomy of a Grain Corridor: Demurrage, Moisture and Tariffs', '24:18')">
+              <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1200&q=80" alt="Grain Terminals" class="w-full h-full object-cover opacity-70 group-hover:opacity-90 group-hover:scale-105 transition duration-700">
+              <div class="absolute inset-0 bg-brand-obsidian/40 flex items-center justify-center">
+                <div class="w-16 h-16 rounded-full bg-brand-gold/90 text-brand-obsidian flex items-center justify-center shadow-2xl group-hover:scale-110 transition">
+                  <i data-lucide="play" class="w-7 h-7 fill-brand-obsidian ml-1"></i>
+                </div>
+              </div>
+              <span class="absolute bottom-3 right-3 bg-brand-obsidian/90 text-white font-mono text-[11px] px-2 py-1 rounded">
+                24:18 RUNTIME
+              </span>
+            </div>
+
+            <div class="lg:col-span-5 p-8 flex flex-col justify-between space-y-6">
+              <div class="space-y-3">
+                <div class="text-[10px] font-mono uppercase tracking-widest text-brand-gold">Documentary Investigation #01</div>
+                <h3 class="text-2xl font-serif font-bold text-white leading-snug">
+                  Anatomy of a Grain Corridor: Demurrage, Moisture and Tariffs
+                </h3>
+                <p class="text-xs text-stone-400 leading-relaxed">
+                  A field-level investigation into how transport bottlenecks, barge draft constraints, and port demurrage drive up to 28% of the final landed pricing before maritime dispatch.
+                </p>
+              </div>
+
+              <div class="pt-4 border-t border-brand-border/60 flex items-center justify-between">
+                <button onclick="openVideoModal('Anatomy of a Grain Corridor: Demurrage, Moisture and Tariffs', '24:18')" class="px-4 py-2 bg-brand-gold hover:bg-brand-goldLight text-brand-obsidian font-mono font-bold text-xs uppercase tracking-wider rounded-sm transition">
+                  Watch Preview
+                </button>
+                <span class="text-[10px] font-mono text-stone-500">Produced by PMN Media</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </section>
+
+    <!-- ================= PAGE 2: ABOUT PMN ================= -->
+    <section id="page-about" class="page-view hidden">
+      <div class="bg-brand-navy py-16 border-b border-brand-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
+          <span class="text-xs font-mono font-bold uppercase tracking-widest text-brand-gold">Institutional Charter</span>
+          <h1 class="text-4xl sm:text-5xl font-serif font-bold text-white">About Produce Market Network</h1>
+          <p class="text-base text-stone-400 max-w-3xl">
+            Building the institutional intelligence, commercial connectivity, and market infrastructure for global agriculture.
+          </p>
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 space-y-16">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          
+          <div class="lg:col-span-8 space-y-8 text-stone-300 leading-relaxed text-sm">
+            <div>
+              <h2 class="text-2xl font-serif font-bold text-white mb-3">Why PMN Exists</h2>
+              <p>
+                Agricultural commodities feed humanity, fuel industrial processing, and generate trillions of dollars in international trade. Yet, unlike equities, currencies, or refined energy markets, agricultural markets remain burdened by opacity, fragmented value chains, and asymmetrical counterparty verification.
+              </p>
+            </div>
+
+            <div class="p-6 bg-brand-navy border-l-4 border-brand-gold space-y-2">
+              <h3 class="font-serif font-bold text-white text-base">The Economic Premise: We Followed The Money</h3>
+              <p class="text-stone-400 italic">
+                Agriculture generates tremendous economic value, but where that value accumulates requires looking beyond primary cultivation. PMN exists to examine and connect the entire ecosystem: aggregators, mills, bulk warehouses, maritime logistics, and institutional buyers.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+              <div class="p-6 bg-brand-navy border border-brand-border">
+                <div class="font-mono text-xs font-bold text-brand-gold uppercase mb-2">Our Vision</div>
+                <p class="text-xs text-stone-400 leading-relaxed">
+                  To become a leading global institution for agricultural market intelligence, commercial connectivity, and physical commodity commerce.
+                </p>
+              </div>
+              <div class="p-6 bg-brand-navy border border-brand-border">
+                <div class="font-mono text-xs font-bold text-emerald-400 uppercase mb-2">Our Mission</div>
+                <p class="text-xs text-stone-400 leading-relaxed">
+                  To make agricultural markets more transparent, connected, and efficient through objective information, modern connectivity technology, trusted commercial networks, and disciplined execution.
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <h2 class="text-2xl font-serif font-bold text-white mb-3">Ethical Positioning & Structural Rigor</h2>
+              <p>
+                PMN is an emerging market institution built with long-term international ambition. We do not manufacture inflated transaction metrics, fabricate international branch offices, or claim premature market dominance. We establish credibility through structural precision, uncompromising research standards, and disciplined ecosystem development.
+              </p>
+            </div>
+          </div>
+
+          <div class="lg:col-span-4 space-y-6">
+            <div class="bg-brand-navy p-6 border border-brand-border space-y-4">
+              <div class="text-xs font-mono uppercase font-bold text-brand-gold tracking-wider">Institutional Standard</div>
+              <ul class="text-xs space-y-3 text-stone-400">
+                <li class="flex items-start gap-2">
+                  <i data-lucide="check-circle-2" class="w-4 h-4 text-brand-gold shrink-0 mt-0.5"></i>
+                  <span><strong>Fact-Based Intelligence:</strong> Research independent of commercial promotion.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i data-lucide="check-circle-2" class="w-4 h-4 text-brand-gold shrink-0 mt-0.5"></i>
+                  <span><strong>Verified Network Access:</strong> Rigorous counterparty vetting before matchmaking.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i data-lucide="check-circle-2" class="w-4 h-4 text-brand-gold shrink-0 mt-0.5"></i>
+                  <span><strong>Deep Supply Chain Mapping:</strong> Primary origin to destination clearance.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="bg-brand-obsidian p-6 border border-brand-border text-xs font-mono space-y-2 text-stone-400">
+              <div class="text-white font-bold uppercase">Corporate Classification</div>
+              <div>Entity: Produce Market Network (PMN)</div>
+              <div>Sector: Agricultural Market Intelligence & Infrastructure</div>
+              <div>Development Phase: Pre-Commercial Institutional Rollout</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PAGE 3: THE 4 DIVISIONS ================= -->
+    <section id="page-businesses" class="page-view hidden">
+      <div class="bg-brand-navy py-16 border-b border-brand-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
+          <span class="text-xs font-mono font-bold uppercase tracking-widest text-brand-gold">Corporate Structure</span>
+          <h1 class="text-4xl sm:text-5xl font-serif font-bold text-white">Our Four Business Divisions</h1>
+          <p class="text-base text-stone-400 max-w-3xl">
+            A synchronized four-pillar corporate architecture engineered to transform agricultural opacity into structured commercial discovery.
+          </p>
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 space-y-16">
+        
+        <!-- Pillar 1 -->
+        <div class="bg-brand-navy border border-brand-border p-8 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div class="lg:col-span-4 space-y-4">
+            <span class="inline-block px-2.5 py-1 bg-brand-obsidian text-brand-gold text-xs font-mono font-bold uppercase">Division 01</span>
+            <h2 class="text-3xl font-serif font-bold text-white">PMN Media</h2>
+            <div class="text-xs font-mono uppercase tracking-wider text-stone-400">Agricultural Journalism & Documentaries</div>
+            <button onclick="navigateTo('media')" class="mt-4 px-4 py-2 bg-brand-gold text-brand-obsidian text-xs font-mono font-bold uppercase rounded-sm">
+              Visit Media Desk
+            </button>
+          </div>
+          <div class="lg:col-span-8 space-y-4 text-xs text-stone-300 leading-relaxed">
+            <p>
+              Investigates and communicates the business, economics, and corporate forces behind global agricultural flow. PMN Media produces cinematic documentaries, investigative features, and corporate analyses exploring food security, trade policy, and supply chains.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div class="p-3 bg-brand-obsidian border border-brand-border">
+                <div class="font-mono text-white font-bold uppercase">Core Formats</div>
+                <div class="text-stone-400 mt-1">Full-length documentaries, trade reports, business features, executive interviews.</div>
+              </div>
+              <div class="p-3 bg-brand-obsidian border border-brand-border">
+                <div class="font-mono text-white font-bold uppercase">Thematic Scope</div>
+                <div class="text-stone-400 mt-1">Cross-border tariffs, demurrage economics, agribusiness finance, input inflation.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pillar 2 -->
+        <div class="bg-brand-navy border border-brand-border p-8 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div class="lg:col-span-4 space-y-4">
+            <span class="inline-block px-2.5 py-1 bg-brand-obsidian text-brand-gold text-xs font-mono font-bold uppercase">Division 02</span>
+            <h2 class="text-3xl font-serif font-bold text-white">PMN Intelligence</h2>
+            <div class="text-xs font-mono uppercase tracking-wider text-stone-400">Market Data, Research & Benchmarks</div>
+            <button onclick="navigateTo('intelligence')" class="mt-4 px-4 py-2 bg-brand-gold text-brand-obsidian text-xs font-mono font-bold uppercase rounded-sm">
+              Launch Terminal
+            </button>
+          </div>
+          <div class="lg:col-span-8 space-y-4 text-xs text-stone-300 leading-relaxed">
+            <p>
+              Transforms fragmented physical market data into institutional commercial datasets. PMN Intelligence evaluates cash prices, regional basis differentials, port congestion dwell times, and historical supply-demand balances.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <div class="p-3 bg-brand-obsidian border border-brand-border">
+                <div class="font-mono text-white font-bold uppercase">Data Products</div>
+                <div class="text-stone-400 mt-1">PMN Price Monitor, Freight Parity Indices, Regional Basis Differentials.</div>
+              </div>
+              <div class="p-3 bg-brand-obsidian border border-brand-border">
+                <div class="font-mono text-white font-bold uppercase">Target Users</div>
+                <div class="text-stone-400 mt-1">Procurement directors, commodity analysts, trade finance underwriters.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pillar 3 -->
+        <div class="bg-brand-navy border border-brand-border p-8 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div class="lg:col-span-4 space-y-4">
+            <span class="inline-block px-2.5 py-1 bg-brand-obsidian text-brand-gold text-xs font-mono font-bold uppercase">Division 03</span>
+            <h2 class="text-3xl font-serif font-bold text-white">PMN Exchange</h2>
+            <div class="text-xs font-mono uppercase tracking-wider text-stone-400">Commercial Connectivity & RFQ Discovery</div>
+            <button onclick="navigateTo('connectivity')" class="mt-4 px-4 py-2 bg-brand-gold text-brand-obsidian text-xs font-mono font-bold uppercase rounded-sm">
+              Onboard Counterparty
+            </button>
+          </div>
+          <div class="lg:col-span-8 space-y-4 text-xs text-stone-300 leading-relaxed">
+            <p>
+              A digital counterparty network connecting verified agricultural aggregators, licensed processors, and institutional off-takers. Facilitates structured RFQs, specifications alignment, and bilateral discovery.
+            </p>
+            <div class="p-3 bg-brand-obsidian border border-brand-border text-[11px] font-mono text-amber-300/80">
+              * Phase Notice: PMN Exchange is currently establishing participant verification standards and RFQ discovery protocols. It is not an active speculative retail clearing house.
+            </div>
+          </div>
+        </div>
+
+        <!-- Pillar 4 -->
+        <div class="bg-brand-navy border border-brand-border p-8 lg:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div class="lg:col-span-4 space-y-4">
+            <span class="inline-block px-2.5 py-1 bg-brand-obsidian text-brand-gold text-xs font-mono font-bold uppercase">Division 04</span>
+            <h2 class="text-3xl font-serif font-bold text-white">PMN Trading</h2>
+            <div class="text-xs font-mono uppercase tracking-wider text-stone-400">Physical Sourcing & Structured Execution</div>
+          </div>
+          <div class="lg:col-span-8 space-y-4 text-xs text-stone-300 leading-relaxed">
+            <p>
+              Designed to participate directly in physical agricultural commodity markets through disciplined sourcing, structured aggregation programs, wholesale export handling, and counterparty supply guarantees.
+            </p>
+            <div class="p-3 bg-brand-obsidian border border-brand-border text-[11px] font-mono text-stone-400">
+              * Governance Disclosure: Physical trading operations will be deployed progressively alongside dedicated risk capital allocations. PMN does not currently operate multi-vessel proprietary desks.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= PAGE 4: MARKET INTELLIGENCE TERMINAL ================= -->
+    <section id="page-intelligence" class="page-view hidden">
+      <div class="bg-brand-navy py-12 border-b border-brand-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-2">
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-xs font-mono font-bold uppercase tracking-widest text-brand-gold">PMN Terminal Demonstrator</span>
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-serif font-bold text-white">Agricultural Market Intelligence</h1>
+          <p class="text-xs font-mono text-stone-400">
+            PROTOTYPE WORKSPACE: Simulated pricing indices, basis differentials, and supply-demand balance models.
+          </p>
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+        
+        <!-- Terminal Controls & Benchmark Selector -->
+        <div class="bg-brand-navy border border-brand-border p-6 rounded-sm shadow-xl space-y-6">
+          <div class="flex flex-wrap items-center justify-between gap-4 border-b border-brand-border pb-4">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-stone-400 uppercase">Benchmark Contract:</span>
+              <div class="flex flex-wrap gap-2">
+                <button onclick="switchCommodity('cocoa')" id="btn-com-cocoa" class="px-3 py-1 text-xs font-mono uppercase bg-brand-gold text-brand-obsidian font-bold rounded-sm">ICCO Cocoa</button>
+                <button onclick="switchCommodity('wheat')" id="btn-com-wheat" class="px-3 py-1 text-xs font-mono uppercase bg-brand-obsidian border border-brand-border text-stone-300 font-bold rounded-sm">HRW Wheat</button>
+                <button onclick="switchCommodity('palm')" id="btn-com-palm" class="px-3 py-1 text-xs font-mono uppercase bg-brand-obsidian border border-brand-border text-stone-300 font-bold rounded-sm">MDEX Palm Oil</button>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-1 bg-brand-obsidian p-1 rounded border border-brand-border text-xs font-mono">
+              <span class="px-2 text-stone-400">Frequency:</span>
+              <span class="px-2 py-0.5 bg-brand-deepBlue text-brand-gold font-bold">Quarterly Basis</span>
+            </div>
+          </div>
+
+          <!-- Chart Area -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <div class="lg:col-span-8 space-y-4">
+              <div>
+                <h3 id="chart-title" class="text-lg font-serif font-bold text-white">Cocoa Origin Benchmark (FOB West Africa vs CIF Europe)</h3>
+                <div class="text-xs font-mono text-stone-400">USD / Metric Ton • Modelled Price Evolution</div>
+              </div>
+
+              <!-- Interactive Chart Viewport (SVG) -->
+              <div class="h-64 bg-brand-obsidian border border-brand-border rounded p-4 relative flex flex-col justify-between">
+                <div class="flex justify-between text-[10px] font-mono text-stone-500">
+                  <span>HIGH ESTIMATE: <strong id="chart-max">$9,200</strong></span>
+                  <span>SPREAD METRIC: <strong class="text-brand-gold">PARITY SPREAD +$410/MT</strong></span>
+                </div>
+
+                <!-- SVG Visualizer -->
+                <div class="h-44 w-full flex items-end justify-between px-6 pt-4" id="chart-bars">
+                  <!-- Dynamic Bars Injected by JS -->
+                </div>
+
+                <div class="flex justify-between text-[10px] font-mono text-stone-500 border-t border-brand-border/60 pt-2">
+                  <span>Simulated Benchmark Series</span>
+                  <span>Origin Assay Reference: Class A Grade</span>
+                </div>
+              </div>
+
+              <div id="chart-analysis" class="p-4 bg-brand-deepBlue/50 border border-brand-border text-xs text-stone-300 leading-relaxed font-sans">
+                Basis spread analysis: West Africa origin beans reflect strong demand premiums due to seasonal grindings throughput and regulatory export revisions.
+              </div>
+            </div>
+
+            <!-- Terminal Indicators Card -->
+            <div class="lg:col-span-4 bg-brand-obsidian p-6 border border-brand-border space-y-4">
+              <div class="text-xs font-mono font-bold uppercase text-brand-gold border-b border-brand-border pb-2">
+                Supply/Demand Balance
+              </div>
+              
+              <div class="space-y-3 font-mono">
+                <div>
+                  <div class="text-[10px] text-stone-500 uppercase">Global Stocks-to-Use Ratio</div>
+                  <div class="text-xl font-bold text-white">22.4%</div>
+                  <div class="text-[10px] text-rose-400 font-bold">-1.8% vs 5-Yr Baseline</div>
+                </div>
+
+                <div>
+                  <div class="text-[10px] text-stone-500 uppercase">Capesize Agricultural Demurrage</div>
+                  <div class="text-xl font-bold text-white">$21.30 / MT</div>
+                  <div class="text-[10px] text-emerald-400 font-bold">+4.5% MoM pressure</div>
+                </div>
+
+                <div>
+                  <div class="text-[10px] text-stone-500 uppercase">Average Port Loading Dwell</div>
+                  <div class="text-xl font-bold text-white">7.2 Days</div>
+                  <div class="text-[10px] text-amber-400 font-bold">Harbor Berth Delays</div>
+                </div>
+              </div>
+
+              <div class="pt-4 border-t border-brand-border">
+                <button onclick="navigateTo('contact')" class="w-full py-2 bg-brand-deepBlue hover:bg-brand-navy border border-brand-border text-xs font-mono uppercase font-bold text-stone-300 hover:text-white rounded transition">
+                  Request Intelligence Briefing
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Regional Basis Differentials Table -->
+        <div class="bg-brand-navy border border-brand-border p-6 rounded-sm space-y-4">
+          <div class="flex justify-between items-center">
+            <div>
+              <h3 class="text-lg font-serif font-bold text-white">Cross-Regional Origin/Destination Basis Spreads</h3>
+              <p class="text-xs text-stone-400">Cash price parities across monitored transit vectors.</p>
+            </div>
+            <span class="text-[10px] font-mono bg-brand-obsidian px-2.5 py-1 rounded border border-brand-border text-stone-300">
+              5 Vectors Monitored
+            </span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-brand-obsidian border-y border-brand-border text-stone-400 uppercase text-[11px]">
+                <tr>
+                  <th class="py-2.5 px-3 font-semibold">Commodity</th>
+                  <th class="py-2.5 px-3 font-semibold">Origin Hub</th>
+                  <th class="py-2.5 px-3 font-semibold">Destination Berth</th>
+                  <th class="py-2.5 px-3 font-semibold">Basis Differential</th>
+                  <th class="py-2.5 px-3 font-semibold">Trend</th>
+                  <th class="py-2.5 px-3 font-semibold">Freight Risk</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-brand-border/60 text-stone-300">
+                <tr class="hover:bg-brand-deepBlue/40">
+                  <td class="py-3 px-3 font-bold text-white">Cocoa Beans</td>
+                  <td class="py-3 px-3 text-stone-400">Abidjan / San Pedro</td>
+                  <td class="py-3 px-3 text-stone-400">Rotterdam CIF</td>
+                  <td class="py-3 px-3 text-brand-gold font-bold">+$410/MT</td>
+                  <td class="py-3 px-3 text-emerald-400">Widening</td>
+                  <td class="py-3 px-3"><span class="px-2 py-0.5 rounded bg-amber-900/40 text-amber-400 border border-amber-800 text-[10px]">Moderate</span></td>
+                </tr>
+                <tr class="hover:bg-brand-deepBlue/40">
+                  <td class="py-3 px-3 font-bold text-white">Milling Wheat</td>
+                  <td class="py-3 px-3 text-stone-400">Constanta / Odesa</td>
+                  <td class="py-3 px-3 text-stone-400">Alexandria FOB</td>
+                  <td class="py-3 px-3 text-brand-gold font-bold">-$14.50/MT</td>
+                  <td class="py-3 px-3 text-stone-400">Stable</td>
+                  <td class="py-3 px-3"><span class="px-2 py-0.5 rounded bg-emerald-900/40 text-emerald-400 border border-emerald-800 text-[10px]">Low</span></td>
+                </tr>
+                <tr class="hover:bg-brand-deepBlue/40">
+                  <td class="py-3 px-3 font-bold text-white">Soybeans Grade 2</td>
+                  <td class="py-3 px-3 text-stone-400">Santos / Paraná</td>
+                  <td class="py-3 px-3 text-stone-400">Qingdao CIF</td>
+                  <td class="py-3 px-3 text-brand-gold font-bold">+$182.00/MT</td>
+                  <td class="py-3 px-3 text-rose-400">Narrowing</td>
+                  <td class="py-3 px-3"><span class="px-2 py-0.5 rounded bg-emerald-900/40 text-emerald-400 border border-emerald-800 text-[10px]">Low</span></td>
+                </tr>
+                <tr class="hover:bg-brand-deepBlue/40">
+                  <td class="py-3 px-3 font-bold text-white">Raw Cashew (RCN)</td>
+                  <td class="py-3 px-3 text-stone-400">Bissau / Lagos</td>
+                  <td class="py-3 px-3 text-stone-400">Tuticorin / HCMC</td>
+                  <td class="py-3 px-3 text-brand-gold font-bold">+$295.00/MT</td>
+                  <td class="py-3 px-3 text-emerald-400">Widening</td>
+                  <td class="py-3 px-3"><span class="px-2 py-0.5 rounded bg-rose-900/40 text-rose-400 border border-rose-800 text-[10px]">Elevated</span></td>
+                </tr>
+                <tr class="hover:bg-brand-deepBlue/40">
+                  <td class="py-3 px-3 font-bold text-white">Crude Palm Oil</td>
+                  <td class="py-3 px-3 text-stone-400">Belawan / Port Klang</td>
+                  <td class="py-3 px-3 text-stone-400">Rotterdam CIF</td>
+                  <td class="py-3 px-3 text-brand-gold font-bold">+$85.00/MT</td>
+                  <td class="py-3 px-3 text-stone-400">Stable</td>
+                  <td class="py-3 px-3"><span class="px-2 py-0.5 rounded bg-emerald-900/40 text-emerald-400 border border-emerald-800 text-[10px]">Low</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= PAGE 5: MEDIA & INSIGHTS ================= -->
+    <section id="page-media" class="page-view hidden">
+      <div class="bg-brand-navy py-16 border-b border-brand-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
+          <span class="text-xs font-mono font-bold uppercase tracking-widest text-brand-gold">PMN Media Desk</span>
+          <h1 class="text-4xl sm:text-5xl font-serif font-bold text-white">Media, Documentaries & Insights</h1>
+          <p class="text-base text-stone-400 max-w-3xl">
+            Long-form economic investigations, field documentaries, and corporate analysis examining the mechanics of agricultural commerce.
+          </p>
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-12">
+        
+        <!-- Category Filter -->
+        <div class="flex flex-wrap items-center gap-2 border-b border-brand-border pb-4 text-xs font-mono">
+          <button onclick="filterMedia('all')" class="media-filter-btn px-3 py-1.5 bg-brand-gold text-brand-obsidian font-bold rounded-sm active" data-cat="all">ALL STORIES</button>
+          <button onclick="filterMedia('documentaries')" class="media-filter-btn px-3 py-1.5 bg-brand-navy border border-brand-border text-stone-300 rounded-sm hover:border-brand-gold" data-cat="documentaries">DOCUMENTARIES</button>
+          <button onclick="filterMedia('agribusiness')" class="media-filter-btn px-3 py-1.5 bg-brand-navy border border-brand-border text-stone-300 rounded-sm hover:border-brand-gold" data-cat="agribusiness">AGRIBUSINESS</button>
+          <button onclick="filterMedia('trade')" class="media-filter-btn px-3 py-1.5 bg-brand-navy border border-brand-border text-stone-300 rounded-sm hover:border-brand-gold" data-cat="trade">GLOBAL TRADE</button>
+        </div>
+
+        <!-- Articles & Documentary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="media-grid">
+          
+          <!-- Item 1 -->
+          <article class="media-card bg-brand-navy border border-brand-border hover:border-brand-gold/60 transition flex flex-col justify-between" data-category="documentaries">
+            <div>
+              <div class="h-48 bg-stone-900 relative cursor-pointer group" onclick="openVideoModal('Anatomy of a Grain Corridor: Demurrage, Moisture and Tariffs', '24:18')">
+                <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80" alt="Rail Terminals" class="w-full h-full object-cover opacity-75 group-hover:opacity-90 transition">
+                <div class="absolute inset-0 bg-brand-obsidian/40 flex items-center justify-center">
+                  <div class="w-12 h-12 rounded-full bg-brand-gold text-brand-obsidian flex items-center justify-center shadow-lg group-hover:scale-110 transition">
+                    <i data-lucide="play" class="w-5 h-5 fill-brand-obsidian ml-0.5"></i>
+                  </div>
+                </div>
+                <span class="absolute bottom-2 right-2 bg-brand-obsidian/90 text-white font-mono text-[10px] px-2 py-0.5 rounded">24:18</span>
+              </div>
+
+              <div class="p-6 space-y-3">
+                <div class="flex justify-between text-[10px] font-mono text-brand-gold uppercase">
+                  <span>Documentary</span>
+                  <span>April 2025</span>
+                </div>
+                <h3 class="text-xl font-serif font-bold text-white hover:text-brand-goldLight transition cursor-pointer" onclick="openVideoModal('Anatomy of a Grain Corridor: Demurrage, Moisture and Tariffs', '24:18')">
+                  Anatomy of a Grain Corridor: Demurrage, Moisture and Tariffs
+                </h3>
+                <p class="text-xs text-stone-400 leading-relaxed">
+                  How river barging constraints and demurrage determine the landed parity of wheat and oilseeds.
+                </p>
+              </div>
+            </div>
+
+            <div class="px-6 py-4 bg-brand-obsidian border-t border-brand-border/60 flex justify-between text-[10px] font-mono text-stone-500">
+              <span>PMN Documentary Unit</span>
+              <span>24 min watch</span>
+            </div>
+          </article>
+
+          <!-- Item 2 -->
+          <article class="media-card bg-brand-navy border border-brand-border hover:border-brand-gold/60 transition flex flex-col justify-between" data-category="agribusiness">
+            <div class="p-6 space-y-3">
+              <div class="flex justify-between text-[10px] font-mono text-brand-gold uppercase">
+                <span>Agribusiness Analysis</span>
+                <span>March 2025</span>
+              </div>
+              <h3 class="text-xl font-serif font-bold text-white hover:text-brand-goldLight transition cursor-pointer">
+                The Cocoa Processing Deficit: Origin Grindings vs Terminal Warehouses
+              </h3>
+              <p class="text-xs text-stone-400 leading-relaxed">
+                Why bean rally dislocations forced global grinding houses to renegotiate long-term forward agreements across West Africa.
+              </p>
+            </div>
+            <div class="px-6 py-4 bg-brand-obsidian border-t border-brand-border/60 flex justify-between text-[10px] font-mono text-stone-500">
+              <span>PMN Intelligence Research</span>
+              <span>12 min read</span>
+            </div>
+          </article>
+
+          <!-- Item 3 -->
+          <article class="media-card bg-brand-navy border border-brand-border hover:border-brand-gold/60 transition flex flex-col justify-between" data-category="trade">
+            <div class="p-6 space-y-3">
+              <div class="flex justify-between text-[10px] font-mono text-brand-gold uppercase">
+                <span>Global Trade</span>
+                <span>February 2025</span>
+              </div>
+              <h3 class="text-xl font-serif font-bold text-white hover:text-brand-goldLight transition cursor-pointer">
+                Red Sea Transit Surcharges on East African Coffee Shipments
+              </h3>
+              <p class="text-xs text-stone-400 leading-relaxed">
+                Quantifying maritime insurance premiums and container dwell delays between Mombasa, Djibouti, and Mediterranean roasteries.
+              </p>
+            </div>
+            <div class="px-6 py-4 bg-brand-obsidian border-t border-brand-border/60 flex justify-between text-[10px] font-mono text-stone-500">
+              <span>Logistics Intelligence Desk</span>
+              <span>15 min read</span>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PAGE 6: MARKET CONNECTIVITY (EXCHANGE) ================= -->
+    <section id="page-connectivity" class="page-view hidden">
+      <div class="bg-brand-navy py-16 border-b border-brand-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
+          <span class="text-xs font-mono font-bold uppercase tracking-widest text-brand-gold">PMN Exchange</span>
+          <h1 class="text-4xl sm:text-5xl font-serif font-bold text-white">Commercial Connectivity & Registry</h1>
+          <p class="text-base text-stone-400 max-w-3xl">
+            A verified commercial network connecting agricultural producers, licensed aggregators, processors, and institutional buyers.
+          </p>
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 space-y-16">
+        
+        <!-- Verification Pathway -->
+        <div class="space-y-6">
+          <div class="border-b border-brand-border pb-4">
+            <span class="text-xs font-mono font-bold uppercase text-brand-gold">Institutional Onboarding</span>
+            <h2 class="text-2xl font-serif font-bold text-white mt-1">Counterparty Verification Architecture</h2>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="p-6 bg-brand-navy border border-brand-border space-y-3">
+              <div class="w-8 h-8 rounded-full bg-brand-obsidian text-brand-gold font-mono font-bold flex items-center justify-center text-xs border border-brand-border">01</div>
+              <h3 class="font-serif font-bold text-white text-base">Corporate Accreditation</h3>
+              <p class="text-xs text-stone-400 leading-relaxed">Vetting of incorporation, warehouse lease documentation, and export licensing.</p>
+            </div>
+            <div class="p-6 bg-brand-navy border border-brand-border space-y-3">
+              <div class="w-8 h-8 rounded-full bg-brand-obsidian text-brand-gold font-mono font-bold flex items-center justify-center text-xs border border-brand-border">02</div>
+              <h3 class="font-serif font-bold text-white text-base">Assay & Specification</h3>
+              <p class="text-xs text-stone-400 leading-relaxed">Standardization of commodity moisture, foreign matter, and laboratory inspection protocols.</p>
+            </div>
+            <div class="p-6 bg-brand-navy border border-brand-border space-y-3">
+              <div class="w-8 h-8 rounded-full bg-brand-obsidian text-brand-gold font-mono font-bold flex items-center justify-center text-xs border border-brand-border">03</div>
+              <h3 class="font-serif font-bold text-white text-base">Commercial Matchmaking</h3>
+              <p class="text-xs text-stone-400 leading-relaxed">Connecting verified origin suppliers with vetted industrial off-takers via private RFQs.</p>
+            </div>
+            <div class="p-6 bg-brand-navy border border-brand-border space-y-3">
+              <div class="w-8 h-8 rounded-full bg-brand-obsidian text-brand-gold font-mono font-bold flex items-center justify-center text-xs border border-brand-border">04</div>
+              <h3 class="font-serif font-bold text-white text-base">Execution Oversight</h3>
+              <p class="text-xs text-stone-400 leading-relaxed">Coordinate logistics milestones, port berths, and documentary letters of credit.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Onboarding Expression of Interest Form -->
+        <div class="max-w-3xl mx-auto bg-brand-navy border border-brand-border p-8 md:p-10 shadow-2xl rounded-sm space-y-6">
+          <div>
+            <span class="text-xs font-mono font-bold uppercase text-brand-gold">Commercial Registry</span>
+            <h2 class="text-2xl font-serif font-bold text-white mt-1">Register Entity for Network Onboarding</h2>
+            <p class="text-xs text-stone-400 mt-1">Qualified agribusinesses will be contacted by our counterparty verification unit.</p>
+          </div>
+
+          <div id="exchange-success" class="hidden p-6 bg-brand-obsidian border border-brand-gold/60 rounded space-y-3">
+            <div class="flex items-center gap-2 text-brand-gold font-mono font-bold text-xs uppercase">
+              <i data-lucide="check-circle" class="w-4 h-4"></i> Submission Received
+            </div>
+            <p class="text-xs text-stone-300">
+              Your entity expression of interest has been filed with the PMN Commercial Onboarding desk. Our compliance team will review your registration against our phased regional accreditation criteria.
+            </p>
+          </div>
+
+          <form id="exchange-form" onsubmit="handleExchangeSubmit(event)" class="space-y-4 text-xs font-mono">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <label class="text-stone-300 font-bold uppercase">Legal Entity Name *</label>
+                <input type="text" required placeholder="e.g. Continental Grain Logistics Ltd" class="w-full p-2.5 bg-brand-obsidian border border-brand-border rounded focus:border-brand-gold focus:outline-none text-white">
+              </div>
+              <div class="space-y-1">
+                <label class="text-stone-300 font-bold uppercase">Country of Incorporation *</label>
+                <input type="text" required placeholder="e.g. Ghana / Switzerland / USA" class="w-full p-2.5 bg-brand-obsidian border border-brand-border rounded focus:border-brand-gold focus:outline-none text-white">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <label class="text-stone-300 font-bold uppercase">Commercial Capacity *</label>
+                <select class="w-full p-2.5 bg-brand-obsidian border border-brand-border rounded focus:border-brand-gold focus:outline-none text-stone-200">
+                  <option>Origin Aggregator / Federation</option>
+                  <option>Primary Producer / Plantation</option>
+                  <option>Industrial Processor / Miller</option>
+                  <option>Commodity Merchant / Trader</option>
+                  <option>Institutional Off-taker / Manufacturer</option>
+                </select>
+              </div>
+              <div class="space-y-1">
+                <label class="text-stone-300 font-bold uppercase">Primary Commodity Complex *</label>
+                <input type="text" required placeholder="e.g. Raw Cocoa, Cashew, Soybeans" class="w-full p-2.5 bg-brand-obsidian border border-brand-border rounded focus:border-brand-gold focus:outline-none text-white">
+              </div>
+            </div>
+
+            <div class="space-y-1">
+              <label class="text-stone-300 font-bold uppercase">Corporate Contact Officer & Email *</label>
+              <input type="email" required placeholder="executive@corporate-entity.com" class="w-full p-2.5 bg-brand-obsidian border border-brand-border rounded focus:border-brand-gold focus:outline-none text-white">
+            </div>
+
+            <div class="pt-2">
+              <button type="submit" class="w-full py-3 bg-brand-gold hover:bg-brand-goldLight text-brand-obsidian font-bold uppercase tracking-wider rounded transition">
+                Submit Commercial Entity Credentials
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= PAGE 7: GLOBAL TRADE OUTLOOK ================= -->
+    <section id="page-outlook" class="page-view hidden">
+      <div class="bg-brand-navy py-16 border-b border-brand-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
+          <span class="text-xs font-mono font-bold uppercase tracking-widest text-brand-gold">Macro Geography</span>
+          <h1 class="text-4xl sm:text-5xl font-serif font-bold text-white">Global Trade Corridors & Outlook</h1>
+          <p class="text-base text-stone-400 max-w-3xl">
+            Mapping origin basins, inland aggregation choke points, and destination maritime corridors.
+          </p>
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 space-y-12">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          
+          <!-- Corridor 1 -->
+          <div class="bg-brand-navy border border-brand-border p-8 space-y-4">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-[10px] font-mono text-brand-gold uppercase tracking-widest">Trade Corridor 01</span>
+                <h3 class="text-2xl font-serif font-bold text-white mt-1">West Africa Tropical Softs</h3>
+                <p class="text-xs font-mono text-stone-400">Axis: Abidjan • San Pedro • Tema • Lagos</p>
+              </div>
+              <span class="text-xs font-mono bg-brand-obsidian px-2 py-1 rounded text-stone-300 border border-brand-border">$24.5B Value</span>
+            </div>
+            <div class="space-y-2 text-xs text-stone-300">
+              <p><strong>Primary Commodities:</strong> Cocoa Beans, Raw Cashew Nuts (RCN), Natural Rubber, Palm Fractions.</p>
+              <p><strong>Destination Outlets:</strong> Rotterdam, Antwerp, Tuticorin, Hai Phong.</p>
+              <div class="p-3 bg-brand-obsidian border border-brand-border text-stone-400 font-mono text-[11px]">
+                Choke Point: Port berth dwell averages 11.2 days during peak harvest season.
+              </div>
+            </div>
+          </div>
+
+          <!-- Corridor 2 -->
+          <div class="bg-brand-navy border border-brand-border p-8 space-y-4">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-[10px] font-mono text-brand-gold uppercase tracking-widest">Trade Corridor 02</span>
+                <h3 class="text-2xl font-serif font-bold text-white mt-1">Black Sea & Danube Soft Grains</h3>
+                <p class="text-xs font-mono text-stone-400">Axis: Constanta • Izmail • Odesa</p>
+              </div>
+              <span class="text-xs font-mono bg-brand-obsidian px-2 py-1 rounded text-stone-300 border border-brand-border">$38.2B Value</span>
+            </div>
+            <div class="space-y-2 text-xs text-stone-300">
+              <p><strong>Primary Commodities:</strong> Milling Wheat, Feed Barley, Sunseed Crude Oil, Yellow Corn.</p>
+              <p><strong>Destination Outlets:</strong> Alexandria, Mersin, Jebel Ali, Chittagong.</p>
+              <div class="p-3 bg-brand-obsidian border border-brand-border text-stone-400 font-mono text-[11px]">
+                Choke Point: War-risk maritime reinsurance fluctuations and shallow barge draft demurrage.
+              </div>
+            </div>
+          </div>
+
+          <!-- Corridor 3 -->
+          <div class="bg-brand-navy border border-brand-border p-8 space-y-4">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-[10px] font-mono text-brand-gold uppercase tracking-widest">Trade Corridor 03</span>
+                <h3 class="text-2xl font-serif font-bold text-white mt-1">Cerrado & Paraná Basin Bulk Gateway</h3>
+                <p class="text-xs font-mono text-stone-400">Axis: Santos • Paranaguá • Rosario</p>
+              </div>
+              <span class="text-xs font-mono bg-brand-obsidian px-2 py-1 rounded text-stone-300 border border-brand-border">$68.0B Value</span>
+            </div>
+            <div class="space-y-2 text-xs text-stone-300">
+              <p><strong>Primary Commodities:</strong> Soybeans, Ethanol-Grade Corn, Raw Sugar No. 11.</p>
+              <p><strong>Destination Outlets:</strong> Qingdao, Zhoushan, Rotterdam, Tokyo.</p>
+              <div class="p-3 bg-brand-obsidian border border-brand-border text-stone-400 font-mono text-[11px]">
+                Choke Point: Highway trucking transit congestion and berth waiting queues.
+              </div>
+            </div>
+          </div>
+
+          <!-- Corridor 4 -->
+          <div class="bg-brand-navy border border-brand-border p-8 space-y-4">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-[10px] font-mono text-brand-gold uppercase tracking-widest">Trade Corridor 04</span>
+                <h3 class="text-2xl font-serif font-bold text-white mt-1">Southeast Asia Tropicals & Fats</h3>
+                <p class="text-xs font-mono text-stone-400">Axis: Port Klang • Belawan • Surabaya</p>
+              </div>
+              <span class="text-xs font-mono bg-brand-obsidian px-2 py-1 rounded text-stone-300 border border-brand-border">$45.8B Value</span>
+            </div>
+            <div class="space-y-2 text-xs text-stone-300">
+              <p><strong>Primary Commodities:</strong> Crude Palm Oil (CPO), Robusta Coffee, Cassava Starch.</p>
+              <p><strong>Destination Outlets:</strong> Mumbai, Kandla, Rotterdam, Shanghai.</p>
+              <div class="p-3 bg-brand-obsidian border border-brand-border text-stone-400 font-mono text-[11px]">
+                Choke Point: Domestic market obligation (DMO) regulatory shifts and bulk vessel availability.
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= PAGE 8: INSTITUTIONAL CONTACT ================= -->
+    <section id="page-contact" class="page-view hidden">
+      <div class="bg-brand-navy py-16 border-b border-brand-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-3">
+          <span class="text-xs font-mono font-bold uppercase tracking-widest text-brand-gold">Secretariat & Desks</span>
+          <h1 class="text-4xl sm:text-5xl font-serif font-bold text-white">Institutional Engagement</h1>
+          <p class="text-base text-stone-400 max-w-3xl">
+            Direct communication channels for corporate inquiries, media accreditation, research data partnerships, and institutional cooperation.
+          </p>
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          
+          <!-- Contact Form -->
+          <div class="lg:col-span-7 bg-brand-navy border border-brand-border p-8 md:p-10 shadow-2xl rounded-sm space-y-6">
+            <div>
+              <h2 class="text-2xl font-serif font-bold text-white">Submit Institutional Communication</h2>
+              <p class="text-xs text-stone-400 mt-1">Messages are routed directly to the designated divisional desk.</p>
+            </div>
+
+            <div id="contact-success" class="hidden p-6 bg-brand-obsidian border border-brand-gold/60 rounded space-y-2">
+              <div class="flex items-center gap-2 text-brand-gold font-mono font-bold text-xs uppercase">
+                <i data-lucide="check-circle" class="w-4 h-4"></i> Communication Received
+              </div>
+              <p class="text-xs text-stone-300">
+                Your message has been logged in the PMN institutional communication register. An officer will respond in accordance with official protocol.
+              </p>
+            </div>
+
+            <form id="contact-form" onsubmit="handleContactSubmit(event)" class="space-y-4 text-xs font-mono">
+              <div class="space-y-1">
+                <label class="text-stone-300 font-bold uppercase">Division Desk *</label>
+                <select class="w-full p-2.5 bg-brand-obsidian border border-brand-border rounded focus:border-brand-gold focus:outline-none text-stone-200">
+                  <option>Commercial Network (PMN Exchange)</option>
+                  <option>Research & Data (PMN Intelligence)</option>
+                  <option>Media & Broadcast Bureau (PMN Media)</option>
+                  <option>Executive Secretariat & Governance</option>
+                </select>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="space-y-1">
+                  <label class="text-stone-300 font-bold uppercase">Full Name *</label>
+                  <input type="text" required placeholder="Dr. Arthur Thorne" class="w-full p-2.5 bg-brand-obsidian border border-brand-border rounded focus:border-brand-gold focus:outline-none text-white">
+                </div>
+                <div class="space-y-1">
+                  <label class="text-stone-300 font-bold uppercase">Corporate Email *</label>
+                  <input type="email" required placeholder="thorne@institution.org" class="w-full p-2.5 bg-brand-obsidian border border-brand-border rounded focus:border-brand-gold focus:outline-none text-white">
+                </div>
+              </div>
+
+              <div class="space-y-1">
+                <label class="text-stone-300 font-bold uppercase">Organization Name *</label>
+                <input type="text" required placeholder="e.g. Geneva Commodity Capital" class="w-full p-2.5 bg-brand-obsidian border border-brand-border rounded focus:border-brand-gold focus:outline-none text-white">
+              </div>
+
+              <div class="space-y-1">
+                <label class="text-stone-300 font-bold uppercase">Inquiry Scope *</label>
+                <textarea rows="4" required placeholder="Please outline the nature of your institution's inquiry..." class="w-full p-2.5 bg-brand-obsidian border border-brand-border rounded focus:border-brand-gold focus:outline-none text-white"></textarea>
+              </div>
+
+              <div class="pt-2">
+                <button type="submit" class="w-full py-3 bg-brand-gold hover:bg-brand-goldLight text-brand-obsidian font-bold uppercase tracking-wider rounded transition">
+                  Transmit Institutional Communication
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Official Desks Directory -->
+          <div class="lg:col-span-5 space-y-6">
+            <div class="bg-brand-navy p-6 border border-brand-border space-y-4">
+              <div class="text-xs font-mono uppercase font-bold text-brand-gold tracking-wider">Direct Divisional Inquiries</div>
+              
+              <div class="space-y-4 text-xs font-mono text-stone-300">
+                <div>
+                  <div class="text-white font-bold">MEDIA & PRESS BUREAU</div>
+                  <div class="text-stone-400">Documentary syndication, interviews, and press queries:</div>
+                  <div class="text-brand-gold font-semibold mt-0.5">media@producemarketnetwork.com</div>
+                </div>
+
+                <div class="pt-3 border-t border-brand-border/60">
+                  <div class="text-white font-bold">RESEARCH & INTELLIGENCE</div>
+                  <div class="text-stone-400">Benchmark methodology, data access, and publications:</div>
+                  <div class="text-brand-gold font-semibold mt-0.5">intelligence@producemarketnetwork.com</div>
+                </div>
+
+                <div class="pt-3 border-t border-brand-border/60">
+                  <div class="text-white font-bold">EXCHANGE ONBOARDING</div>
+                  <div class="text-stone-400">Counterparty qualification & RFQ participation:</div>
+                  <div class="text-brand-gold font-semibold mt-0.5">exchange@producemarketnetwork.com</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-brand-obsidian p-6 border border-brand-border text-xs text-stone-400 space-y-2">
+              <div class="font-mono text-white font-bold uppercase">Data Confidentiality Protocol</div>
+              <p class="leading-relaxed">
+                All communications submitted to Produce Market Network are handled under institutional non-disclosure standards. PMN does not provide retail investment advice or speculative securities trading.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 4. MODAL DOCUMENTARY PLAYER -->
+  <div id="video-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-brand-navy border border-brand-border max-w-3xl w-full rounded-sm overflow-hidden shadow-2xl">
+      <div class="flex justify-between items-center p-4 border-b border-brand-border text-white">
+        <div class="flex items-center gap-2">
+          <i data-lucide="play" class="w-4 h-4 text-brand-gold"></i>
+          <span id="modal-title" class="font-serif font-bold text-sm">Documentary Preview</span>
+        </div>
+        <button onclick="closeVideoModal()" class="text-stone-400 hover:text-white p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <div class="aspect-video bg-black rounded border border-brand-border flex flex-col items-center justify-center text-center p-6 relative">
+          <div class="w-16 h-16 rounded-full bg-brand-gold/90 text-brand-obsidian flex items-center justify-center mb-3">
+            <i data-lucide="play" class="w-8 h-8 fill-brand-obsidian ml-1"></i>
+          </div>
+          <div class="text-xs font-mono text-white font-bold uppercase tracking-wider">PMN Media Investigative Unit Stream</div>
+          <div class="text-[11px] font-mono text-stone-400 mt-1" id="modal-runtime">Runtime: 24:18</div>
+        </div>
+        <p class="text-xs text-stone-300 leading-relaxed font-sans">
+          This documentary is part of PMN Media's international economic series examining logistics friction, port demurrage, and value movement across agricultural commodity corridors.
+        </p>
+      </div>
+
+      <div class="p-4 bg-brand-obsidian border-t border-brand-border flex justify-end">
+        <button onclick="closeVideoModal()" class="px-4 py-2 bg-brand-navy border border-brand-border hover:border-brand-gold text-white text-xs font-mono uppercase rounded-sm">
+          Close Stream
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. INSTITUTIONAL FOOTER -->
+  <footer class="bg-[#04070B] border-t border-brand-border text-stone-400 text-xs py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
+        
+        <!-- Brand Summary -->
+        <div class="lg:col-span-2 space-y-4">
+          <div class="flex items-center gap-2.5">
+            <div class="w-7 h-7 bg-brand-deepBlue border border-brand-gold/60 flex items-center justify-center text-brand-gold font-display font-bold text-sm">
+              P
+            </div>
+            <span class="font-display tracking-[0.2em] text-sm font-bold text-white uppercase">
+              PRODUCE MARKET NETWORK
+            </span>
+          </div>
+          <p class="text-xs text-stone-400 leading-relaxed max-w-sm">
+            Produce Market Network (PMN) is an emerging global agricultural market intelligence, connectivity and commerce ecosystem. Connecting information to commercial decisions, and production to international opportunities.
+          </p>
+          <div class="text-[11px] font-mono text-brand-gold">
+            "We followed the money across global agriculture."
+          </div>
+        </div>
+
+        <!-- Divisions Links -->
+        <div class="space-y-3 font-mono">
+          <div class="text-white font-bold uppercase text-[11px]">The 4 Divisions</div>
+          <ul class="space-y-2 text-xs text-stone-400">
+            <li><button onclick="navigateTo('media')" class="hover:text-brand-gold">PMN Media</button></li>
+            <li><button onclick="navigateTo('intelligence')" class="hover:text-brand-gold">PMN Intelligence</button></li>
+            <li><button onclick="navigateTo('connectivity')" class="hover:text-brand-gold">PMN Exchange</button></li>
+            <li><button onclick="navigateTo('businesses')" class="hover:text-brand-gold">PMN Trading</button></li>
+          </ul>
+        </div>
+
+        <!-- Research Domains -->
+        <div class="space-y-3 font-mono">
+          <div class="text-white font-bold uppercase text-[11px]">Intelligence</div>
+          <ul class="space-y-2 text-xs text-stone-400">
+            <li><button onclick="navigateTo('intelligence')" class="hover:text-brand-gold">Commodity Price Monitors</button></li>
+            <li><button onclick="navigateTo('intelligence')" class="hover:text-brand-gold">Basis Differentials</button></li>
+            <li><button onclick="navigateTo('outlook')" class="hover:text-brand-gold">Global Trade Corridors</button></li>
+            <li><button onclick="navigateTo('media')" class="hover:text-brand-gold">Documentary Library</button></li>
+          </ul>
+        </div>
+
+        <!-- Institutional -->
+        <div class="space-y-3 font-mono">
+          <div class="text-white font-bold uppercase text-[11px]">Institutional</div>
+          <ul class="space-y-2 text-xs text-stone-400">
+            <li><button onclick="navigateTo('about')" class="hover:text-brand-gold">Corporate Charter</button></li>
+            <li><button onclick="navigateTo('connectivity')" class="hover:text-brand-gold">Counterparty Registry</button></li>
+            <li><button onclick="navigateTo('contact')" class="hover:text-brand-gold">Secretariat Inquiries</button></li>
+            <li><span class="text-stone-600">Ethics & Compliance</span></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="pt-8 border-t border-brand-border/60 flex flex-col md:flex-row justify-between items-center gap-4 text-[11px] font-mono text-stone-500">
+        <div>
+          &copy; <span id="current-year"></span> PRODUCE MARKET NETWORK (PMN). All international institutional rights reserved.
+        </div>
+        <div class="flex items-center gap-4">
+          <span>Institutional Architecture</span>
+          <span>•</span>
+          <span>Pre-Commercial Rollout</span>
+          <span>•</span>
+          <button onclick="navigateTo('contact')" class="text-brand-gold hover:underline">Executive Desk</button>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- 6. JAVASCRIPT: APPLICATION LOGIC & THREE.JS 3D ENGINES -->
+  <script>
+    // Set Year
+    document.getElementById('current-year').innerText = new Date().getFullYear();
+
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // SPA View Router
+    function navigateTo(pageId) {
+      document.querySelectorAll('.page-view').forEach(p => p.classList.add('hidden'));
+      const target = document.getElementById(`page-${pageId}`);
+      if (target) {
+        target.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      // Update Nav state
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      const activeNav = document.getElementById(`nav-${pageId}`);
+      if (activeNav) activeNav.classList.add('active');
+
+      // Close mobile drawer if open
+      const menu = document.getElementById('mobile-menu');
+      if (!menu.classList.contains('hidden')) {
+        toggleMobileMenu();
+      }
+
+      // Re-initialize 3D container size if needed
+      if (pageId === 'home' && window.heroResizeHandler) {
+        setTimeout(window.heroResizeHandler, 50);
+      }
+      lucide.createIcons();
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      const openIcon = document.getElementById('menu-icon-open');
+      const closeIcon = document.getElementById('menu-icon-close');
+      menu.classList.toggle('hidden');
+      openIcon.classList.toggle('hidden');
+      closeIcon.classList.toggle('hidden');
+      lucide.createIcons();
+    }
+
+    // Modal Video Preview Controls
+    function openVideoModal(title, runtime) {
+      document.getElementById('modal-title').innerText = title;
+      document.getElementById('modal-runtime').innerText = `Runtime: ${runtime}`;
+      const modal = document.getElementById('video-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      lucide.createIcons();
+    }
+
+    function closeVideoModal() {
+      const modal = document.getElementById('video-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // Form handlers
+    function handleExchangeSubmit(e) {
+      e.preventDefault();
+      document.getElementById('exchange-form').reset();
+      document.getElementById('exchange-success').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function handleContactSubmit(e) {
+      e.preventDefault();
+      document.getElementById('contact-form').reset();
+      document.getElementById('contact-success').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    // Media Filter
+    function filterMedia(cat) {
+      document.querySelectorAll('.media-filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-cat') === cat) {
+          btn.classList.add('bg-brand-gold', 'text-brand-obsidian', 'font-bold');
+          btn.classList.remove('bg-brand-navy', 'text-stone-300');
+        } else {
+          btn.classList.remove('bg-brand-gold', 'text-brand-obsidian', 'font-bold');
+          btn.classList.add('bg-brand-navy', 'text-stone-300');
+        }
+      });
+
+      document.querySelectorAll('.media-card').forEach(card => {
+        if (cat === 'all' || card.getAttribute('data-category') === cat) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    }
+
+    // Commodity Terminal Interactive Engine
+    const COMMODITY_MODELS = {
+      cocoa: {
+        title: 'Cocoa Origin Benchmark (FOB West Africa vs CIF Europe)',
+        max: '$9,200',
+        analysis: 'West Africa basis spreads reflect robust structural processing demand across European grinding facilities despite inland harvest aggregation constraints.',
+        bars: [
+          { label: 'Q1 24', price: '$5,400', height: '55%' },
+          { label: 'Q2 24', price: '$9,200', height: '98%' },
+          { label: 'Q3 24', price: '$7,400', height: '78%' },
+          { label: 'Q4 24', price: '$8,100', height: '85%' },
+          { label: 'Q1 25', price: '$8,650', height: '90%' },
+          { label: 'Q2 25(P)', price: '$8,240', height: '86%' },
+        ]
+      },
+      wheat: {
+        title: 'Hard Red Winter Wheat (Gulf Export vs Black Sea Parity)',
+        max: '$260',
+        analysis: 'Black Sea parity discount currently averages -$14.50/MT against US Gulf export berths, with maritime insurance premiums steadying across Mediterranean lanes.',
+        bars: [
+          { label: 'Q1 24', price: '$248', height: '88%' },
+          { label: 'Q2 24', price: '$235', height: '80%' },
+          { label: 'Q3 24', price: '$218', height: '65%' },
+          { label: 'Q4 24', price: '$226', height: '72%' },
+          { label: 'Q1 25', price: '$219', height: '66%' },
+          { label: 'Q2 25(P)', price: '$224', height: '70%' },
+        ]
+      },
+      palm: {
+        title: 'Crude Palm Oil (Malaysian FOB vs Rotterdam CIF)',
+        max: '$1,020',
+        analysis: 'Regional Southeast Asian biofuel blending mandates continue to absorb domestic physical supply, underpinning Rotterdam CIF parity premiums.',
+        bars: [
+          { label: 'Q1 24', price: '$890', height: '68%' },
+          { label: 'Q2 24', price: '$920', height: '72%' },
+          { label: 'Q3 24', price: '$960', height: '80%' },
+          { label: 'Q4 24', price: '$990', height: '86%' },
+          { label: 'Q1 25', price: '$940', height: '76%' },
+          { label: 'Q2 25(P)', price: '$982', height: '84%' },
+        ]
+      }
+    };
+
+    function switchCommodity(key) {
+      const data = COMMODITY_MODELS[key];
+      if (!data) return;
+
+      document.getElementById('chart-title').innerText = data.title;
+      document.getElementById('chart-max').innerText = data.max;
+      document.getElementById('chart-analysis').innerText = data.analysis;
+
+      ['cocoa', 'wheat', 'palm'].forEach(k => {
+        const btn = document.getElementById(`btn-com-${k}`);
+        if (k === key) {
+          btn.className = 'px-3 py-1 text-xs font-mono uppercase bg-brand-gold text-brand-obsidian font-bold rounded-sm';
+        } else {
+          btn.className = 'px-3 py-1 text-xs font-mono uppercase bg-brand-obsidian border border-brand-border text-stone-300 font-bold rounded-sm';
+        }
+      });
+
+      renderChartBars(data.bars);
+    }
+
+    function renderChartBars(bars) {
+      const container = document.getElementById('chart-bars');
+      container.innerHTML = '';
+      bars.forEach(b => {
+        const barCol = document.createElement('div');
+        barCol.className = 'flex flex-col items-center gap-1.5 h-full justify-end group';
+        barCol.innerHTML = `
+          <span class="text-[9px] font-mono text-stone-400 opacity-0 group-hover:opacity-100 transition">${b.price}</span>
+          <div style="height: ${b.height}" class="w-7 sm:w-10 bg-brand-gold/75 group-hover:bg-brand-gold transition-all rounded-t-sm"></div>
+          <span class="text-[9px] font-mono text-stone-400">${b.label}</span>
+        `;
+        container.appendChild(barCol);
+      });
+    }
+    // Initial Render of Chart
+    renderChartBars(COMMODITY_MODELS.cocoa.bars);
+
+    // ========================================================
+    // THREE.JS 3D ENGINE 1: INTERACTIVE GLOBAL TRADE CORRIDOR GLOBE
+    // ========================================================
+    function initHeroGlobe() {
+      const container = document.getElementById('hero3d-container');
+      if (!container) return;
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+      camera.position.set(0, 5, 26);
+
+      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.appendChild(renderer.domElement);
+
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.enableZoom = false;
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 0.6;
+
+      // Central Wireframe/Particle Sphere
+      const globeGroup = new THREE.Group();
+      scene.add(globeGroup);
+
+      // Sphere Points (Particle Globe)
+      const particleCount = 1400;
+      const geometry = new THREE.BufferGeometry();
+      const positions = new Float32Array(particleCount * 3);
+      const radius = 8.5;
+
+      for (let i = 0; i < particleCount; i++) {
+        const phi = Math.acos(-1 + (2 * i) / particleCount);
+        const theta = Math.sqrt(particleCount * Math.PI) * phi;
+        positions[i * 3] = radius * Math.cos(theta) * Math.sin(phi);
+        positions[i * 3 + 1] = radius * Math.sin(theta) * Math.sin(phi);
+        positions[i * 3 + 2] = radius * Math.cos(phi);
+      }
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      const pMaterial = new THREE.PointsMaterial({
+        color: 0x4a658a,
+        size: 0.14,
+        transparent: true,
+        opacity: 0.75
+      });
+      const points = new THREE.Points(geometry, pMaterial);
+      globeGroup.add(points);
+
+      // Concentric Latitudinal Orbital Rings
+      const ringGeom = new THREE.RingGeometry(9.6, 9.68, 64);
+      const ringMat = new THREE.MeshBasicMaterial({ color: 0xC49753, side: THREE.DoubleSide, transparent: true, opacity: 0.35 });
+      const ring1 = new THREE.Mesh(ringGeom, ringMat);
+      ring1.rotation.x = Math.PI / 2.8;
+      globeGroup.add(ring1);
+
+      const ringGeom2 = new THREE.RingGeometry(11.2, 11.25, 64);
+      const ringMat2 = new THREE.MeshBasicMaterial({ color: 0x1F2E45, side: THREE.DoubleSide, transparent: true, opacity: 0.4 });
+      const ring2 = new THREE.Mesh(ringGeom2, ringMat2);
+      ring2.rotation.x = Math.PI / 1.7;
+      ring2.rotation.y = Math.PI / 4;
+      globeGroup.add(ring2);
+
+      // Trade Corridor 3D Bezier Arcs (Representing soft commodity flow)
+      function createTradeArc(v1, v2, color = 0xC49753) {
+        const distance = v1.distanceTo(v2);
+        const mid = v1.clone().lerp(v2, 0.5);
+        mid.normalize().multiplyScalar(radius + distance * 0.28);
+        const curve = new THREE.QuadraticBezierCurve3(v1, mid, v2);
+        const points = curve.getPoints(40);
+        const arcGeom = new THREE.BufferGeometry().setFromPoints(points);
+        const arcMat = new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: 0.85, linewidth: 2 });
+        return new THREE.Line(arcGeom, arcMat);
+      }
+
+      // Origin nodes on sphere (Lat/Lon spherical conversion)
+      function latLonToVec3(lat, lon, r) {
+        const phi = (90 - lat) * (Math.PI / 180);
+        const theta = (lon + 180) * (Math.PI / 180);
+        return new THREE.Vector3(
+          -r * Math.sin(phi) * Math.cos(theta),
+          r * Math.cos(phi),
+          r * Math.sin(phi) * Math.sin(theta)
+        );
+      }
+
+      // Key Trade Hubs (Coordinates)
+      const hubs = [
+        { name: 'West Africa (Abidjan)', pos: latLonToVec3(5.3, -4.0, radius) },
+        { name: 'North Europe (Rotterdam)', pos: latLonToVec3(51.9, 4.4, radius) },
+        { name: 'Black Sea (Constanta)', pos: latLonToVec3(44.1, 28.6, radius) },
+        { name: 'East Asia (Qingdao)', pos: latLonToVec3(36.0, 120.3, radius) },
+        { name: 'South America (Santos)', pos: latLonToVec3(-23.9, -46.3, radius) },
+        { name: 'SE Asia (Port Klang)', pos: latLonToVec3(3.0, 101.3, radius) },
+        { name: 'North America (US Gulf)', pos: latLonToVec3(29.9, -90.0, radius) },
+      ];
+
+      // Add glowing hubs
+      const hubGeom = new THREE.SphereGeometry(0.22, 16, 16);
+      const hubMat = new THREE.MeshBasicMaterial({ color: 0xDFC085 });
+      hubs.forEach(h => {
+        const mesh = new THREE.Mesh(hubGeom, hubMat);
+        mesh.position.copy(h.pos);
+        globeGroup.add(mesh);
+      });
+
+      // Connect corridors with trade arcs
+      globeGroup.add(createTradeArc(hubs[0].pos, hubs[1].pos, 0xC49753)); // West Africa -> Rotterdam
+      globeGroup.add(createTradeArc(hubs[4].pos, hubs[3].pos, 0x059669)); // Santos -> Qingdao
+      globeGroup.add(createTradeArc(hubs[2].pos, hubs[1].pos, 0xC49753)); // Black Sea -> Europe
+      globeGroup.add(createTradeArc(hubs[5].pos, hubs[1].pos, 0x38BDF8)); // Port Klang -> Rotterdam
+      globeGroup.add(createTradeArc(hubs[6].pos, hubs[1].pos, 0xC49753)); // US Gulf -> Europe
+      globeGroup.add(createTradeArc(hubs[0].pos, hubs[3].pos, 0x059669)); // West Africa -> East Asia
+
+      // Resize listener
+      window.heroResizeHandler = function() {
+        if (!container) return;
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      };
+      window.addEventListener('resize', window.heroResizeHandler);
+
+      // Animation Loop
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+      }
+      animate();
+    }
+
+    // ========================================================
+    // THREE.JS 3D ENGINE 2: INTERACTIVE PHYSICAL NODE TOPOLOGY
+    // ========================================================
+    let nodesControls, nodesCamera;
+    function initNodesMatrix() {
+      const container = document.getElementById('nodes3d-container');
+      if (!container) return;
+
+      const scene = new THREE.Scene();
+      nodesCamera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 100);
+      nodesCamera.position.set(0, 0, 14);
+
+      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.appendChild(renderer.domElement);
+
+      nodesControls = new THREE.OrbitControls(nodesCamera, renderer.domElement);
+      nodesControls.enableDamping = true;
+      nodesControls.dampingFactor = 0.05;
+      nodesControls.autoRotate = true;
+      nodesControls.autoRotateSpeed = 1.0;
+
+      // Group for rotating matrix
+      const matrixGroup = new THREE.Group();
+      scene.add(matrixGroup);
+
+      // Core Nodes
+      const nodeDefs = [
+        { x: -4, y: 1.5, z: 0, color: 0xC49753, label: 'Origin Aggregation' },
+        { x: -1.5, y: -2, z: 2, color: 0x059669, label: 'Assay Gate' },
+        { x: 2, y: 2, z: -1, color: 0x059669, label: 'Quality Verification' },
+        { x: 4.5, y: -1, z: 1, color: 0x38BDF8, label: 'Terminal Offtake' },
+        { x: 0, y: 0.5, z: -2.5, color: 0xC49753, label: 'Storage Silo' },
+      ];
+
+      const nodeObjects = [];
+      nodeDefs.forEach(d => {
+        const geom = new THREE.OctahedronGeometry(0.7, 0);
+        const mat = new THREE.MeshStandardMaterial({
+          color: d.color,
+          roughness: 0.3,
+          metalness: 0.8,
+          wireframe: false
+        });
+        const mesh = new THREE.Mesh(geom, mat);
+        mesh.position.set(d.x, d.y, d.z);
+        matrixGroup.add(mesh);
+        nodeObjects.push(mesh);
+      });
+
+      // Connect nodes with light lines
+      const lineMat = new THREE.LineBasicMaterial({ color: 0x1F2E45, transparent: true, opacity: 0.8 });
+      for (let i = 0; i < nodeObjects.length; i++) {
+        for (let j = i + 1; j < nodeObjects.length; j++) {
+          const lGeom = new THREE.BufferGeometry().setFromPoints([
+            nodeObjects[i].position,
+            nodeObjects[j].position
+          ]);
+          const line = new THREE.Line(lGeom, lineMat);
+          matrixGroup.add(line);
+        }
+      }
+
+      // Lights
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+      scene.add(ambientLight);
+      const dirLight = new THREE.DirectionalLight(0xDFC085, 1.2);
+      dirLight.position.set(10, 10, 10);
+      scene.add(dirLight);
+
+      // Resize
+      window.addEventListener('resize', () => {
+        if (!container) return;
+        nodesCamera.aspect = container.clientWidth / container.clientHeight;
+        nodesCamera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      });
+
+      // Animate
+      function animateNodes() {
+        requestAnimationFrame(animateNodes);
+        nodesControls.update();
+        nodeObjects.forEach(m => {
+          m.rotation.x += 0.01;
+          m.rotation.y += 0.015;
+        });
+        renderer.render(scene, nodesCamera);
+      }
+      animateNodes();
+    }
+
+    function resetNodesCamera() {
+      if (nodesCamera && nodesControls) {
+        nodesCamera.position.set(0, 0, 14);
+        nodesControls.reset();
+      }
+    }
+
+    // Window Load Trigger
+    window.onload = function() {
+      initHeroGlobe();
+      initNodesMatrix();
+    };
+  </script>
+</body>
+</html>
